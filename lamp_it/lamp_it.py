@@ -47,8 +47,8 @@ lamp = ChatBot(
     filters=[
         'chatterbot.filters.RepetitiveResponseFilter'
     ],
-    input_adapter='chatterbot.input.TerminalAdapter',
-    output_adapter='chatterbot.output.TerminalAdapter',
+    #input_adapter='chatterbot.input.TerminalAdapter',
+    #output_adapter='chatterbot.output.TerminalAdapter',
     database='./databaselampit.sqlite3'
 )
 
@@ -261,8 +261,8 @@ def lamp_it(data):
 #train_file("ai.yml");
 speak("Hi Buddy , what can I do for you?")
 while 1:
-    #data = recordAudio();
-    data=str(input("Question:"));
+    data = recordAudio();
+    #data=str(input("Question:"));
     ans=lamp_it(data);
 
 
