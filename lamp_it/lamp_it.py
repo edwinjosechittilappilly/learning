@@ -8,7 +8,7 @@
 
 # In[1]:
 
-
+import chatterbot
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 
@@ -52,11 +52,19 @@ lamp = ChatBot(
     database='./databaselampit.sqlite3'
 )
 
+#VOICE
+
+def speak(audioString):
+    print(audioString)
+    tts = gTTS(text=audioString, lang='en')
+    tts.save("audio.mp3")
+    os.system("mpg321 audio.mp3")
 #trainer for the list available in the folder
 # In[3]:
 
 
 def train_file(filename):
+    speak("I am learinig and launching myself soon");
     path=filename+"";
     file = open(path, 'r')
     n_lines=0;
@@ -88,7 +96,6 @@ def calibrate():
     if (s==0):
         return False;
     else:
-        train_file("ai.yml");
         return True;
 print(calibrate());
 
@@ -119,8 +126,7 @@ def self_calibrate():
         i+=1;
         
         
-        
-        ### add the code to change the initial state to zero once the file had been calibrated
+### add the code to change the initial state to zero once the file had been calibrated
 
 
 # In[6]:
@@ -128,7 +134,7 @@ def self_calibrate():
 
 if(calibrate()):
     print("calibarting");
-    self_calibrate();
+    #self_calibrate();
     train_file("self_calibrate.txt");
 else:
     print("dont calibrate");
@@ -168,32 +174,31 @@ def online(ask):
 
 
 
-def speak(audioString):
-   print(audioString)
-   tts = gTTS(text=audioString, lang='en')
-   tts.save("audio.mp3")
-   os.system("mpg321 audio.mp3")
 
 def recordAudio():
    # Record Audio
-   r = sr.Recognizer()
-   with sr.Microphone() as source:
-       print("Say something!")
-       audio = r.listen(source)
+    r = sr.Recognizer()
+    r.dynamic_energy_threshold = True
+    with sr.Microphone() as source:
+        r.adjust_for_ambient_noise(source, duration = 3);
+        print("Say something!")
+        audio = r.listen(source)
 
    # Speech recognition using Google Speech Recognition
-   data = ""
-   try:
+    data = ""
+    try:
        # Uses the default API key
        # To use another API key: `r.recognize_google(audio, key="GOOGLE_SPEECH_RECOGNITION_API_KEY")`
-       data = r.recognize_google(audio)
-       print("You said: " + data)
-   except sr.UnknownValueError:
-       print("Google Speech Recognition could not understand audio")
-   except sr.RequestError as e:
-       print("Could not request results from Google Speech Recognition service; {0}".format(e))
+        data = r.recognize_google(audio)
+        print("You said: " + data)
+    except sr.UnknownValueError:
+        print("Google Speech Recognition could not understand audio")
+    except sr.RequestError as e:
+        print("Could not request results from Google Speech Recognition service; {0}".format(e))
+        data=r.recognize_sphinx(audio);
+        print("Sphinx thinks you said " + data)
 
-   return data
+    return data
 
 
 # # lamp main function
@@ -253,9 +258,10 @@ def lamp_it(data):
 
 
 #time.sleep(5)
+#train_file("ai.yml");
 speak("Hi Buddy , what can I do for you?")
 while 1:
-    data = recordAudio();
+    #data = recordAudio();
     data=str(input("Question:"));
     ans=lamp_it(data);
 
